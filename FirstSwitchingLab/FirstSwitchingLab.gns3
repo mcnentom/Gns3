@@ -84,38 +84,6 @@
             },
             {
                 "filters": {},
-                "link_id": "59f5680a-6d13-40ee-ba2e-721abeece814",
-                "link_style": {},
-                "nodes": [
-                    {
-                        "adapter_number": 3,
-                        "label": {
-                            "rotation": 0,
-                            "style": "font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;",
-                            "text": "GigabitEthernet3",
-                            "x": 1,
-                            "y": 37
-                        },
-                        "node_id": "b9170b03-d331-47ad-a1d6-6ff3c45c5136",
-                        "port_number": 0
-                    },
-                    {
-                        "adapter_number": 0,
-                        "label": {
-                            "rotation": 0,
-                            "style": "font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;",
-                            "text": "e0",
-                            "x": 66,
-                            "y": 7
-                        },
-                        "node_id": "91955447-9e2e-429f-97d4-460e495b5ecb",
-                        "port_number": 0
-                    }
-                ],
-                "suspend": false
-            },
-            {
-                "filters": {},
                 "link_id": "1f708518-c97f-44fe-b0e1-6f7823f0727a",
                 "link_style": {},
                 "nodes": [
@@ -173,6 +141,38 @@
                             "y": 35
                         },
                         "node_id": "fd939086-cebb-46d1-a3bf-691c30a750ec",
+                        "port_number": 0
+                    }
+                ],
+                "suspend": false
+            },
+            {
+                "filters": {},
+                "link_id": "b3fd05ba-6384-4e1b-b150-4cea22d6d5c4",
+                "link_style": {},
+                "nodes": [
+                    {
+                        "adapter_number": 3,
+                        "label": {
+                            "rotation": 0,
+                            "style": "font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;",
+                            "text": "GigabitEthernet3",
+                            "x": 4,
+                            "y": 40
+                        },
+                        "node_id": "b9170b03-d331-47ad-a1d6-6ff3c45c5136",
+                        "port_number": 0
+                    },
+                    {
+                        "adapter_number": 0,
+                        "label": {
+                            "rotation": 0,
+                            "style": "font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;",
+                            "text": "e0",
+                            "x": 71,
+                            "y": -1
+                        },
+                        "node_id": "91955447-9e2e-429f-97d4-460e495b5ecb",
                         "port_number": 0
                     }
                 ],
@@ -350,7 +350,7 @@
                 "compute_id": "local",
                 "console": null,
                 "console_auto_start": false,
-                "console_type": null,
+                "console_type": "none",
                 "custom_adapters": [],
                 "first_port_name": null,
                 "height": 71,
@@ -458,5 +458,5 @@
     "type": "topology",
     "variables": null,
     "version": "2.2.54",
-    "zoom": 100
+    "zoom": 84
 }

@@ -1,0 +1,299 @@
+What is Network Slicing?
+
+Network slicing is a way of dividing a single physical network infrastructure into multiple virtual networks (slices).
+
+Each slice is logically independent and tailored for a specific use case, but they all share the same underlying physical resources.
+
+It’s like running multiple dedicated networks on the same hardware.
+
+2. Why is it Important?
+
+In 5G, there are very different use cases that cannot be served well by a "one-size-fits-all" network. For example:
+
+Enhanced Mobile Broadband (eMBB): High-speed internet for video streaming, VR, AR.
+
+Ultra-Reliable Low-Latency Communication (URLLC): For applications like self-driving cars, remote surgery, industrial automation.
+
+Massive Machine Type Communications (mMTC): Billions of IoT sensors/devices with low bandwidth but huge scale.
+
+With network slicing, each of these gets its own optimized virtual network, even though they use the same 5G infrastructure.
+
+Key Concepts a Network Engineer Should Know
+
+a) Virtualization & SDN/NFV
+
+Slices are built using Software Defined Networking (SDN) and Network Function Virtualization (NFV).
+
+Instead of dedicated hardware, network functions (like firewalls, gateways, load balancers) run as software on shared hardware.
+
+This flexibility allows quick deployment of slices on-demand.
+
+b) Isolation
+
+Each slice is isolated performance, security, and management in one slice don’t affect others.
+
+Example: An IoT slice (mMTC) won’t consume resources meant for URLLC.
+
+c) SLA (Service Level Agreement) Customization
+
+Each slice has its own QoS (Quality of Service) requirements:
+
+Bandwidth
+
+Latency
+
+Reliability
+
+Network slicing ensures these are met individually per slice.
+
+d) Orchestration & Automation
+
+Network slices are created, monitored, and managed dynamically using orchestration platforms.
+
+Engineers must understand slice lifecycle management (creation, scaling, deletion).
+
+e) Security in Network Slicing
+
+Each slice must have its own security policies, authentication, and isolation.
+
+Engineers must know how security can be enforced per slice without affecting others.
+
+f) Integration with Cloud & Edge Computing
+
+Many slices extend to edge computing for ultra-low latency use cases.
+
+Engineers need to know how network slicing integrates with edge/cloud platforms.
+
+4. Skills & Knowledge Areas for a Network Engineer
+
+To be strong in network slicing, you should be familiar with:
+
+5G Core concepts (5GC, gNodeB, AMF, SMF, UPF, etc.)
+
+SDN controllers (e.g., ONOS, OpenDaylight)
+
+NFV platforms (e.g., OpenStack, VMware, Kubernetes for CNFs)
+
+QoS mechanisms (latency, bandwidth control, prioritization)
+
+Slice orchestration frameworks (ETSI MANO, 3GPP specifications)
+
+Security per slice (isolation, authentication, monitoring).
+
+Network Slicing in a LAN
+
+1. VLANs (Virtual LANs)
+
+The simplest form of slicing in Ethernet/IP networks.
+
+You divide a physical switch into multiple virtual broadcast domains.
+
+Each VLAN can represent a different “slice” (e.g., IoT devices, VoIP phones, corporate PCs).
+
+Traffic is isolated, and you can apply different policies per VLAN.
+Tools: Cisco Packet Tracer, GNS3, real switches/routers.
+
+2. VRFs (Virtual Routing and Forwarding)
+
+At Layer 3, you can create multiple independent routing tables on the same router.
+
+Each VRF is like a separate “network slice” with its own IP addressing, routes, and policies.
+
+Used in enterprises and service provider networks.
+Example: Cisco/Juniper routers.
+
+3. QoS-based Slicing
+
+Instead of just isolating traffic, you can allocate bandwidth, priority, or latency guarantees to different traffic classes.
+
+Example:
+
+Slice 1: High-priority, low-latency (VoIP).
+
+Slice 2: High-bandwidth (video streaming).
+
+Slice 3: Best-effort (web browsing).
+Tools: Cisco QoS configs (class maps, policy maps, shaping/policing).
+
+4. SDN (Software Defined Networking)
+
+With SDN controllers (like OpenDaylight, ONOS, or Ryu), you can program the network to create logical slices dynamically.
+
+Example: One slice for IoT traffic, another for security cameras, another for corporate data — all over the same switches/links.
+Tools: Mininet (Python-based network emulator), GNS3 with Open vSwitch.
+
+5. NFV (Network Function Virtualization)
+
+You can run virtual firewalls, routers, and load balancers as VNFs (Virtual Network Functions) on the same server, but allocate them to different slices.
+
+Each slice can get its own virtual network services.
+Tools: VMware, VirtualBox, Proxmox, or Kubernetes with CNFs (Cloud-Native Functions).
+
+6. Linux-Based Slicing (Lab-Friendly)
+
+On a Linux box, you can experiment with:
+
+Namespaces → Create isolated network stacks (like VRFs).
+
+cgroups → Limit CPU/memory resources per slice.
+
+tc (traffic control) → Apply QoS/shaping to enforce slice SLAs.
+
+VRFS
+Normally, a router has one global routing table.
+
+With VRF, the router maintains multiple, separate routing tables, one per VRF.
+
+Each VRF is like a virtual router inside the same physical device.
+
+When traffic comes in on an interface that belongs to a VRF, that packet is looked up only in that VRF’s routing table.
+
+🚦 How Outgoing Traffic Works in a VRF
+Step 1. Packet Ingress
+
+A packet enters the router on an interface.
+
+That interface is already assigned to a VRF (e.g., ip vrf forwarding CORP).
+
+So, the router immediately knows “this packet belongs to VRF CORP”.
+
+Step 2. Routing Lookup
+
+Instead of the global routing table, the router looks into VRF CORP’s routing table.
+
+It finds the best route for the destination IP (which could be a local subnet, static route, or a next-hop in the same VRF).
+
+Step 3. Forwarding Decision
+
+The router forwards the packet out of an interface that also belongs to VRF CORP.
+
+If the destination is not in VRF CORP’s table, the packet is dropped.
+
+This means traffic cannot escape a VRF unless you configure it (like via route leaking or exporting routes between VRFs).
+
+Example (VRF Outgoing Traffic)
+
+Topology:
+
+PC1 (192.168.10.10) → R1 Gi0/0.10 (192.168.10.1) [VRF-CORP]
+PC2 (192.168.20.10) → R1 Gi0/0.20 (192.168.20.1) [VRF-GUEST]
+
+
+PC1 sends a packet to 8.8.8.8 (Google DNS).
+
+Packet arrives at R1’s Gi0/0.10 → This interface is in VRF-CORP.
+
+R1 checks the VRF-CORP routing table:
+R1# show ip route vrf CORP
+S* 0.0.0.0/0 [1/0] via 192.168.10.254
+It finds a default route to the next hop (ISP gateway) within VRF-CORP.
+
+Packet is forwarded out via VRF-CORP’s exit interface.
+
+The same process happens independently for VRF-GUEST, using its own default route.
+
+Key Point About Outgoing Traffic
+VRF = Routing table isolation.
+
+Outgoing traffic only uses routes defined in its own VRF.
+
+A VRF cannot borrow routes from the global table or another VRF unless you explicitly configure:
+
+Route leaking (import/export routes between VRFs).
+
+Shared services VRF (like internet or DNS).
+
+In a network slicing scenario:
+
+Corporate users (VRF-CORP) can only use corporate routes.
+
+Guests (VRF-GUEST) can only use guest routes.
+
+They may both share the same physical uplink, but logically they’re isolated slices.
+
+You can send both slices to the same ISP, but the ISP sees two independent VPNs.
+
+Configuring VRFS
+On R1 create VRFS(Slices)
+R1(config)# ip vrf CORP
+R1(config-vrf)# rd 100:1
+R1(config-vrf)# exit
+
+R1(config)# ip vrf GUEST
+R1(config-vrf)# rd 100:2
+R1(config-vrf)# exit
+rd → Route Distinguisher (mainly for MPLS VPNs, but required to create the VRF)
+
+Bind router interfaces (or sub-interfaces) to the VRFs.
+! Corporate VLAN
+R1(config)# interface GigabitEthernet0/0.10
+R1(config-if)# encapsulation dot1Q 10
+R1(config-if)# ip vrf forwarding CORP
+R1(config-if)# ip address 192.168.10.1 255.255.255.0
+R1(config-if)# no shutdown
+
+! Guest VLAN
+R1(config)# interface GigabitEthernet0/0.20
+R1(config-if)# encapsulation dot1Q 20
+R1(config-if)# ip vrf forwarding GUEST
+R1(config-if)# ip address 192.168.20.1 255.255.255.0
+R1(config-if)# no shutdown
+
+Another way
+ip vrf VRF1
+ rd 100:1
+ route-target export 100:1
+ route-target import 100:1
+
+ip vrf VRF2
+ rd 100:2
+ route-target export 100:2
+ route-target import 100:2
+
+ip vrf VRF3
+ rd 100:3
+ route-target export 100:3
+ route-target import 100:3
+
+interface g0/1
+ ip vrf forwarding VRF1
+ ip address 192.168.10.1 255.255.255.0
+
+interface g0/2
+ ip vrf forwarding VRF2
+ ip address 192.168.10.1 255.255.255.0   ! same gateway possible or you can use a different one.
+
+interface g0/3
+ ip vrf forwarding VRF3
+ ip address 192.168.20.1 255.255.255.0
+
+interface g0/0
+ description ISP uplink
+ ip address 200.1.1.1 255.255.255.252
+
+
+Define default routes:
+Applies to both approaches:
+ip route vrf VRF1 0.0.0.0 0.0.0.0 200.1.1.2
+ip route vrf VRF2 0.0.0.0 0.0.0.0 200.1.1.2
+ip route vrf VRF3 0.0.0.0 0.0.0.0 200.1.1.2
+
+For VRFs to talk to each other Configure vrf leaking:
+
+ip route vrf VRF1 192.168.10.0(VRF2 net id) 255.255.255.0 192.168.10.1(VRF2 gateway)
+ip route vrf VRF2 192.168.10.0 255.255.255.0 g0/1
+
+If 2 vrfs have same gateway ip,NAT must be confiured or else the router won't be able to distinguish them when they talk to each other:
+
+ip nat inside source vrf VRF1 static 192.168.10.10 10.1.1.10
+ip nat inside source vrf VRF2 static 192.168.10.20 10.2.2.20
+
+Verification Commands
+sh ip vrf //shows all vrfs created.
+sh run | section int  //shows all int bindings to thr vrfs
+sh ip vrf vrf_name  // shows all vrf configured
+ping vrf LAn1 192.168.20.1 //tests reachability from another vrf
+sh ip cef vrf LAn1  //Shows forwardinf entries for each vrf specified.
+
+
+
