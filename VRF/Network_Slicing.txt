@@ -292,7 +292,7 @@ Verification Commands
 sh ip vrf //shows all vrfs created.
 sh run | section int  //shows all int bindings to thr vrfs
 sh ip vrf vrf_name  // shows all vrf configured
-ping vrf LAn1 192.168.20.1 //tests reachability from another vrf
+ping vrf LAn1 192.168.20.4 //tests reachability from another vrf
 sh ip cef vrf LAn1  //Shows forwardinf entries for each vrf specified.
 
 

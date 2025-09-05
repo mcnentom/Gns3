@@ -246,7 +246,7 @@
                 "drawing_id": "f5830d1f-7a5f-4e94-9b18-671a74ea821e",
                 "locked": false,
                 "rotation": 0,
-                "svg": "<svg width=\"110\" height=\"24\"><text font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\" fill=\"#000000\" fill-opacity=\"1.0\">192.168.1.0/24</text></svg>",
+                "svg": "<svg width=\"110\" height=\"24\"><text font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\" fill=\"#000000\" fill-opacity=\"1.0\">192.168.2.0/24</text></svg>",
                 "x": -552,
                 "y": -130,
                 "z": 2
@@ -256,8 +256,8 @@
                 "locked": false,
                 "rotation": 0,
                 "svg": "<svg width=\"118\" height=\"24\"><text font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\" fill=\"#000000\" fill-opacity=\"1.0\">192.168.10.0/24</text></svg>",
-                "x": -561,
-                "y": 46,
+                "x": -597,
+                "y": -8,
                 "z": 2
             },
             {
@@ -312,6 +312,15 @@
                 "svg": "<svg width=\"23\" height=\"24\"><text font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\" fill=\"#000000\" fill-opacity=\"1.0\">L7</text></svg>",
                 "x": 21,
                 "y": 33,
+                "z": 2
+            },
+            {
+                "drawing_id": "62923491-7e69-4006-898c-4a0a33c8c859",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg width=\"118\" height=\"24\"><text font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\" fill=\"#000000\" fill-opacity=\"1.0\">192.168.15.0/24</text></svg>",
+                "x": -590,
+                "y": 116,
                 "z": 2
             }
         ],
@@ -1432,8 +1441,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "77868211-193a-4295-87b3-a05db0c46e13",
                 "width": 66,
-                "x": -446,
-                "y": -14,
+                "x": -459,
+                "y": -27,
                 "z": 1
             },
             {

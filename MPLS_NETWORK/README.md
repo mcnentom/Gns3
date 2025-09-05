@@ -467,8 +467,10 @@ On PE2
 
 * _PE2(config)# mpls ip_
 * _PE2(config)# interface fa0/1_
-* _PE2(config-if)# ip address 192.168.23.3 255.255.255.0_
+* _PE2(config-if)# ip address 10.0.1.1 255.255.255.252_
 * _PE2(config-if)# mpls ip_
+
+**Note:** Repeated on all PE-PE int and PE-P int. CE does not particpate in the mpls so not configured with.
 
 * _PE2(config)# interface loopback0_
 * _PE2(config-if)# ip address 10.0.0.3 255.255.255.255_  //If not set earlier
@@ -502,33 +504,70 @@ This lets customer networks (e.g., LAN1 behind PE1 and LAN2 behind PE2) communic
 We'll configure iBGP between PE1 and PE2 using their loopbacks (10.0.0.1 <-> 10.0.0.3).
 We'll use address-family vpnv4 for MP-BGP.
 
-On PE1
+* _router bgp 65000_
 
-* _PE1(config)# router bgp 65000_
-* _PE1(config-router)# bgp log-neighbor-changes_
+**Note:** Intiates bgp process on this router.
 
-Define PE2 as neighbor using loopback
+**Note:** 65000 = the Autonomous System Number (ASN) of the provider's backbone.This ASN will be used in the AS Path attribute of routes.
 
-* _PE1(config-router)# neighbor 10.0.0.3 remote-as 65000_
-* _PE1(config-router)# neighbor 10.0.0.3 update-source loopback0_
+* _bgp log-neighbor-changes_
 
-Activate VPNv4 address family
+**Note:** Tells the router to log messages whenever a BGP neighbor goes up or down. Helpful for troubleshooting BGP session flaps.
 
-* _PE1(config-router)# address-family vpnv4_
-* _PE1(config-router-af)# neighbor 10.0.0.3 activate_
-* _PE1(config-router-af)# neighbor 10.0.0.3 send-community extended_
+* _neighbor 10.0.0.2 remote-as 6500_
 
-On PE2
+**Note:** Defines a BGP neighbor with IP 10.0.0.3.
 
-* _PE2(config)# router bgp 65000_
-* _PE2(config-router)# bgp log-neighbor-changes_
+**Note:** remote-as 65000 means this neighbor is also in AS 65000 -> so this is an iBGP session (internal BGP). 10.0.0.3 is the loopback address of PE2
 
-* _PE2(config-router)# neighbor 10.0.0.1 remote-as 65000_
-* _PE2(config-router)# neighbor 10.0.0.1 update-source loopback0_
+* _neighbor 10.0.0.3 remote-as 65000_
+* _neighbor 10.0.0.4 remote-as 65000_
+* _neighbor 10.0.0.5 remote-as 65000_
+* _neighbor 10.0.0.6 remote-as 65000_
+* _neighbor 10.0.0.2 update-source loopback0_
 
-* _PE2(config-router)# address-family vpnv4_
-* _PE2(config-router-af)# neighbor 10.0.0.1 activate_
-* _PE2(config-router-af)# neighbor 10.0.0.1 send-community extended_
+**Note:** By default, BGP uses the outgoing interface's IP as the source of TCP sessions. Since we're peering loopback-to-loopback (instead of physical interface addresses), we must force PE1 to use its own loopback0 as the source IP for the BGP session.
+
+**Note:** This ensures reliability if one physical link between PE1 and PE2 fails, the loopback session stays up as long as there is another path through the MPLS core.
+
+**Note:** loopback0 is the loopbck int for PE1 and 10.0.0.2 is loopback int for the destination for instance PE2
+
+* _neighbor 10.0.0.3 update-source loopback0_
+* _neighbor 10.0.0.4 update-source loopback0_
+* _neighbor 10.0.0.5 update-source loopback0_
+* _neighbor 10.0.0.6 update-source loopback0_
+
+
+* _address-family vpnv4_
+
+**Note:** Switches the BGP context to the VPNv4 address family.
+
+**Note:** VPNv4 = IPv4 routes + Route Distinguisher (RD). This is how PE routers exchange customer routes across the MPLS backbone
+
+* _neighbor 10.0.0.2 activate_
+
+**Note:** Activates VPNv4 peering with neighbor 10.0.0.2 (PE2).
+
+**Note:** Without this, PE1 and PE2 would not exchange VPNv4 routes (they would only have IPv4 unicast).
+
+* _neighbor 10.0.0.2 send-community extended_
+
+**Note:** Ensures that extended BGP communities are sent to PE2.
+
+**Note:** Extended communities carry the Route Target (RT), which tells PE2 which VPN a route belongs to. Without this, VPN separation would break, and all customer routes would mix.
+
+* _neighbor 10.0.0.3 activate_
+* _neighbor 10.0.0.3 send-community extended_
+* _neighbor 10.0.0.4 activate_
+* _neighbor 10.0.0.4 send-community extended_
+* _neighbor 10.0.0.5 activate_
+* _neighbor 10.0.0.5 send-community extended_
+* _neighbor 10.0.0.6 activate_
+* _neighbor 10.0.0.6 send-community extended_
+
+
+_Repeat the configurations for all PE routers in the setup with_
+_mp-bgp is only confiured on PE routers loopback/int and not P loopback/int connecting to the PE_
 
 On PE1 : Configure VRF (example for CustomerA)
 
@@ -572,5 +611,18 @@ Should have route to 192.168.20.0/24 via BGP.
 
 Ping across VRFs
 
-* _PE1# ping vrf CUST-A 192.168.20.1_
+* _PE1# ping vrf CUST-A 192.168.20.4_
+
+**Note:** CUST-A is the name of the vrf you want to reach
+**Note:** 192.168.20.4 is the address of the end device or intermediary device connected to the PE router and is in vrf CUST-A
+
+To set static/default routes for communication between vrfs:
+
+* _ip route vrf <VRF-NAME> <DESTINATION> <MASK> <NEXT-HOP>_
+
+**Note:** VRF-NAME is the name of vrf that is to communicate.
+
+**Note:** DESTINATION MASK: net id of the other vrf that is to be commuincated to.
+
+**Note:** 
 
