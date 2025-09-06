@@ -502,6 +502,7 @@ Now, MP-BGP exchanges VPNv4 routes (VRF routes + labels) between PE routers.
 This lets customer networks (e.g., LAN1 behind PE1 and LAN2 behind PE2) communicate securely over the shared provider core.
 
 We'll configure iBGP between PE1 and PE2 using their loopbacks (10.0.0.1 <-> 10.0.0.3).
+
 We'll use address-family vpnv4 for MP-BGP.
 
 * _router bgp 65000_
@@ -569,6 +570,29 @@ We'll use address-family vpnv4 for MP-BGP.
 _Repeat the configurations for all PE routers in the setup with_
 _mp-bgp is only confiured on PE routers loopback/int and not P loopback/int connecting to the PE_
 
+The vrf network has also to be advised underthe mp-bgp:
+
+* _router bgp 65000_
+
+**Note:** Enters BGP process with AS number 65000 (yours may differ). On an MPLS PE, this is the process that participates in VPNv4 
+exchange with other PEs.
+
+* _address-family ipv4 vrf VRF-NAME_
+
+**Note:** Switches into the VRF-specific BGP context for CUST-A.This is where you control how prefixes inside the VRF are injected into BGP.Without entering this sub-mode, PE would only handle global BGP, not customer VRF routes.
+
+* _redistribute connected_
+
+**Note:** Tells BGP to advertise all connected subnets in the CUST-A VRF into MP-BGP. That means any subnet that is directly configured on a PE interface and belongs to the VRF (e.g., CE-facing link, LANs behind CE if directly attached) will now be injected into BGP and won't be advertised without this.
+
+**Note:** redistribute connected can sometimes leak unwanted connected interfaces (like loopbacks or management addresses) if they are bound to the VRF. A safer approach is often: network <Subnet> mask <mask> i.e network 192.168.15.0  mask 255.255.255.0,this only advertises the network you want to be advertised in the bgp.
+
+* _exit-address-family_
+
+**Note:** Exits VRF-specific BGP mode and returns to the general BGP config context
+
+
+
 On PE1 : Configure VRF (example for CustomerA)
 
 * _PE1(config)# ip vrf CUST-A_
@@ -590,6 +614,10 @@ On PE2 : Same VRF (CustomerA)
 * _PE2(config)# interface fa1/0_
 * _PE2(config-if)# ip vrf forwarding CUST-A_
 * _PE2(config-if)# ip address 192.168.20.1 255.255.255.0_
+
+On CE configure default routes to the gateway:
+
+* _ip route 0.0.0.0 0.0.0.0 CE-gateway-ip_
 
 Verification
 
@@ -616,13 +644,6 @@ Ping across VRFs
 **Note:** CUST-A is the name of the vrf you want to reach
 **Note:** 192.168.20.4 is the address of the end device or intermediary device connected to the PE router and is in vrf CUST-A
 
-To set static/default routes for communication between vrfs:
 
-* _ip route vrf <VRF-NAME> <DESTINATION> <MASK> <NEXT-HOP>_
 
-**Note:** VRF-NAME is the name of vrf that is to communicate.
-
-**Note:** DESTINATION MASK: net id of the other vrf that is to be commuincated to.
-
-**Note:** 
 
